@@ -52,4 +52,4 @@ echo "SSH key added to ssh config file successfully."
 
 # Cat the ssh public key to the clipboard
 echo "Your public key is:"
-cat ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
