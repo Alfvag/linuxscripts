@@ -1,15 +1,22 @@
-#! /bin/bash
+#!/bin/bash
 
 # This script installs packages using dnf and some flatpaks
 
+# Exit on error, undefined variables, and propagate pipeline errors
+set -euo pipefail
+
+# Check if script is run with root privileges
+if [ "$EUID" -ne 0 ]; then
+  echo "This script must be run as root (use sudo)."
+  exit 1
+fi
+
 PACKAGES=(
-    # Base packages
     "flatpak"
     "htop"
     "curl"
     "wget"
     "kitty"
-    "vscode"
 )
 
 FLATPAKS=(
@@ -19,41 +26,46 @@ FLATPAKS=(
     "org.zotero.Zotero"
 )
 
-#Uninstall firefox-esr
-if dnf list installed "firefox-esr" &>/dev/null; then
-    echo "Uninstalling firefox-esr..."
-    dnf remove -y "firefox-esr"
-else
-    echo "firefox-esr is not installed."
+# Update the system
+echo "=== Updating the system ==="
+echo "Removing Firefox package..."
+dnf -y remove firefox || echo "Firefox not installed or couldn't be removed"
+
+echo "Cleaning DNF cache..."
+dnf clean all
+
+echo "Upgrading packages..."
+dnf -y upgrade
+
+echo "Removing unnecessary packages..."
+dnf -y autoremove
+
+echo "=== System updated successfully ==="
+
+# Install packages using dnf
+echo "=== Installing DNF packages ==="
+for PACKAGE in "${PACKAGES[@]}"; do
+    echo "Installing $PACKAGE..."
+    dnf -y install "$PACKAGE" || echo "Failed to install $PACKAGE, continuing anyway..."
+done
+echo "=== DNF packages installation completed ==="
+
+# Make sure flatpak is installed before continuing
+if ! command -v flatpak &>/dev/null; then
+    echo "Flatpak not found after installation attempt. Cannot continue with flatpak installations."
+    exit 1
 fi
 
-# Update the system
-echo "Updating the system..."
-dnf clean all
-dnf update -y
-dnf upgrade -y
-dnf autoremove -y
-echo "System updated successfully."
-
-# Function to install packages using dnf
-for PACKAGE in "${PACKAGES[@]}"; do
-    if ! dnf list installed "$PACKAGE" &>/dev/null; then
-        echo "Installing $PACKAGE..."
-        dnf install -y "$PACKAGE"
-    else
-        echo "$PACKAGE is already installed."
-    fi
-done
-
-#Add the flathub repo
+# Add the flathub repo
+echo "=== Adding Flathub repository ==="
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-# Function to install flatpaks
+# Install flatpaks
+echo "=== Installing Flatpak applications ==="
 for FLATPAK in "${FLATPAKS[@]}"; do
-    if ! flatpak list --app | grep -q "$FLATPAK"; then
-        echo "Installing $FLATPAK..."
-        flatpak install -y flathub "$FLATPAK"
-    else
-        echo "$FLATPAK is already installed."
-    fi
+    echo "Installing $FLATPAK..."
+    flatpak install -y flathub "$FLATPAK" || echo "Failed to install $FLATPAK, continuing anyway..."
 done
+echo "=== Flatpak installations completed ==="
+
+echo "All installations completed!"
