@@ -12,11 +12,35 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 PACKAGES=(
+    #Packages
     "flatpak"
     "htop"
     "curl"
     "wget"
+    "fastfetch"
+    #Hyprland deps
     "kitty"
+    "pipewire"
+    "wireplumber"
+    "xdg-desktop-portal-hyprland"
+    "xdg-desktop-portal-gtk"
+    "qt5-qtwayland"
+    "qt6-qtwayland"
+    "fira-code-fonts"
+    "fontawesome-6-free-fonts"
+    "mozilla-fira-sans-fonts"
+    "gtk4"
+    #Hyprland packages
+    "hyprland"
+    "waybar"
+    "hyprpaper"
+    "hyprlock"
+    "mate-polkit"
+    "gdm"
+    "nautilus"
+    "wlogout"
+    "fuzzel"
+    "copyq"
 )
 
 FLATPAKS=(
