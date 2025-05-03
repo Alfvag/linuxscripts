@@ -18,29 +18,7 @@ PACKAGES=(
     "curl"
     "wget"
     "fastfetch"
-    #Hyprland deps
     "kitty"
-    "pipewire"
-    "wireplumber"
-    "xdg-desktop-portal-hyprland"
-    "xdg-desktop-portal-gtk"
-    "qt5-qtwayland"
-    "qt6-qtwayland"
-    "fira-code-fonts"
-    "fontawesome-6-free-fonts"
-    "mozilla-fira-sans-fonts"
-    "gtk4"
-    #Hyprland packages
-    "hyprland"
-    "waybar"
-    "hyprpaper"
-    "hyprlock"
-    "mate-polkit"
-    "gdm"
-    "nautilus"
-    "wlogout"
-    "fuzzel"
-    "copyq"
 )
 
 FLATPAKS=(
@@ -54,6 +32,10 @@ FLATPAKS=(
 echo "=== Updating the system ==="
 echo "Removing Firefox package..."
 dnf -y remove firefox || echo "Firefox not installed or couldn't be removed"
+
+echo "Enabling RPM Fusion repositories..."
+dnf config-manager setopt fedora-cisco-openh264.enabled=1
+dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 echo "Cleaning DNF cache..."
 dnf clean all
@@ -93,3 +75,6 @@ done
 echo "=== Flatpak installations completed ==="
 
 echo "All installations completed!"
+
+reboot
+# End of script
