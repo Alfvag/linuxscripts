@@ -19,13 +19,14 @@ PACKAGES=(
     "wget"
     "fastfetch"
     "kitty"
+    "wlogout"
 )
 
 FLATPAKS=(
     "org.mozilla.firefox"
     "com.spotify.Client"
-    "dev.deedles.Trayscale"
     "org.zotero.Zotero"
+    "com.parsecgaming.parsec"
 )
 
 # Update the system
